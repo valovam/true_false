@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>Правда или ложь?</title>
+		<meta charset="utf-8" />
+		<style>
+			*{text-align:center;}
+			img {width: 200px; position: relative;}
+			#jokey {margin-left: -200px; top: 50px}
+			#cont {top: 50px;}
+			#box {overflow: hidden; height: 200px; width: 100%; background: linear-gradient(lightblue,lightgreen,green)}
+			#but_otvet {display: none}
+			button {height: 50px; width: 100px; border-radius: 20px; font-size: 20px; background: linear-gradient(silver, white, silver); cursor: pointer;}
+		</style>
+		<script>
+		
+			var a = [];//Массив вопросов
+			var nomvopr;//Номер вопроса
+			var xjokey;//Позиция соперника
+			
+			function Vopros(text,otvet)
+			{
+				this.text = text;
+				this.otvet = otvet;
+			}
+			
+			function start()//Подготовка игры
+			{
+				nomvopr=0;
+				xjokey=0;
+				
+				//Блок вопросов
+				a[0] = new Vopros("Протоны несут отрицательный заряд",false);
+				a[1] = new Vopros("Атомы больше, чем нейтроны",true);
+				a[2] = new Vopros("Протоны и нейтроны являются частью ядра",true);
+				a[3] = new Vopros("Электроны несут положительный заряд",false);
+				a[4] = new Vopros("Электроны не являются частью ядра",true);
+				a[5] = new Vopros("Протоны больше, чем атомы",false);
+				a[6] = new Vopros("Субатомные частицы находятся внутри атомов",true);
+				a[7] = new Vopros("Нуклон – это общее название для двух частиц, нейтрона и протона",true);
+				a[8] = new Vopros("Нейтроны несут отрицательный заряд",false);
+				a[9] = new Vopros("У электрона масса больше, чем у протона",false);
+				
+				//Перемешиваем вопросы
+				for (var i=0;i<a.length*10;i++)
+				{
+					var i1 = Math.floor(Math.random()*(a.length));
+					var i2 = Math.floor(Math.random()*(a.length));
+					var buf = a[i1];
+					a[i1] = a[i2];
+					a[i2] = buf;
+				}
+				
+				//Обновляем интерфейс
+				document.getElementById("but_newgame").style.display = "none";
+				document.getElementById("but_otvet").style.display = "inline";
+				document.getElementById("jokey").style.left = xjokey+"px";
+				
+				next();//Переходим к новому (первому) вопросу
+			}
+			
+			function next(){
+				var txt="";
+				if (nomvopr<a.length)//Если вопросы остались
+				{
+					txt+=a[nomvopr].text;//Содержание вопроса
+					}else{//Иначе проверяем итог игры
+					if (xjokey<0) txt+="Вы выиграли!";//Если соперник отстал
+					if (xjokey==0) txt+="Ничья!";//Если вровень
+					if (xjokey>0) txt+="Вы проиграли!";//Если соперник обогнал
+					//Обновляем интерфейс
+					document.getElementById("but_otvet").style.display = "none";//Прячем кнопки ответа
+					document.getElementById("but_newgame").innerHTML = "Еще!";//Меняем надпись на кнопке старта
+					document.getElementById("but_newgame").style.display = "inline";//Показывем кнопку старта
+				}
+				document.getElementById("cont").innerHTML = txt;//Выводим текст сообщения
+			}
+			
+			function proverka(flag)//Проверка правильности ответа
+			{
+				if (a[nomvopr].otvet==flag){//Если ответ и флаг совпадают
+					xjokey-=50;//Соперник отстает
+					}else{
+					xjokey+=50;//Соперник обгоняет
+				}
+				//Обновляем положение соперника
+				document.getElementById("jokey").style.left = xjokey+"px";
+				//Переход к следующему вопросу
+				nomvopr++;
+				next();
+			}
+		</script>
+	</head>
+	<body>
+		<div id="box">
+			<img src="images/horse1.gif"/>
+			<img id="jokey" src="images/horse2.gif"/>
+		</div>
+		<h1 id="cont"></h1>
+		<div id="but_otvet">
+			<button onclick="proverka(true)">Правда</button>
+			<button onclick="proverka(false)">Ложь</button>
+		</div>
+		<button id="but_newgame" onclick="start()">Играть</button>
+	</body>
+</html>
